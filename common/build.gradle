@@ -21,6 +21,8 @@ dependencies {
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
 
     api "fuzs.forgeconfigapiport:forgeconfigapiport-common:${forge_config_api_version}"
+
+    api "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_version}"
 }
 
 publishing {

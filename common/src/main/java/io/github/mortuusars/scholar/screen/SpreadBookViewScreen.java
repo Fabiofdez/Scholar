@@ -11,7 +11,7 @@ import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -110,14 +110,22 @@ public class SpreadBookViewScreen extends Screen {
     }
 
     protected void createPageControlButtons() {
-        ImageButton prevButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
-                295, 0, 15, TEXTURE, 512, 512,
-                (button) -> this.pageBack());
+//        ImageButton prevButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
+//                295, 0, 15, TEXTURE, 512, 512,
+//                (button) -> this.pageBack());
+        SpriteIconButton prevButton = SpriteIconButton.builder(Component.empty(), (button) -> this.pageBack(), true)
+            .sprite(TEXTURE, 13, 15)
+            .build();
+        prevButton.setPosition(leftPos + 12, topPos + 156);
         prevButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
         this.prevButton = this.addRenderableWidget(prevButton);
-        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-                308, 0, 15, TEXTURE, 512, 512,
-                (button) -> this.pageForward());
+//        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
+//                308, 0, 15, TEXTURE, 512, 512,
+//                (button) -> this.pageForward());
+        SpriteIconButton nextButton = SpriteIconButton.builder(Component.empty(), (button) -> this.pageForward(), true)
+            .sprite(TEXTURE, 13, 15)
+            .build();
+        nextButton.setPosition(leftPos + 270, topPos + 156);
         nextButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
         this.nextButton = this.addRenderableWidget(nextButton);
         this.updateButtonVisibility();
@@ -191,7 +199,7 @@ public class SpreadBookViewScreen extends Screen {
     }
 
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 
         RenderUtil.withColorMultiplied(bookColor, () -> {
             // Cover

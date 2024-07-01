@@ -21,6 +21,6 @@ public class ScholarJeiPlugin implements IModPlugin {
     @Override
     public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
         registration.getCraftingCategory()
-                .addCategoryExtension(NbtTransferringRecipe.class, NbtTransferringShapelessExtension::new);
+                .addExtension(NbtTransferringRecipe.class, new NbtTransferringShapelessExtension());
     }
 }

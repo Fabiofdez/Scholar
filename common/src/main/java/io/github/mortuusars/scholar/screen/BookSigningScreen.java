@@ -9,7 +9,7 @@ import io.github.mortuusars.scholar.visual.Formatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -38,8 +38,8 @@ public class BookSigningScreen extends Screen {
     protected int imageWidth, imageHeight, leftPos, topPos, textureWidth, textureHeight;
 
     protected TextBox titleTextBox;
-    protected ImageButton signButton;
-    protected ImageButton cancelSigningButton;
+    protected SpriteIconButton signButton;
+    protected SpriteIconButton cancelSigningButton;
 
     protected String titleText = "";
 
@@ -71,18 +71,30 @@ public class BookSigningScreen extends Screen {
         addRenderableWidget(titleTextBox);
 
         // SIGN
-        signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22, 149, 0,
-                22, TEXTURE, textureWidth, textureHeight,
-                b -> signAlbum(), Component.translatable("book.finalizeButton"));
+//        signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22, 149, 0,
+//                22, TEXTURE, textureWidth, textureHeight,
+//                b -> signAlbum(), Component.translatable("book.finalizeButton"));
+        signButton = SpriteIconButton
+            .builder(Component.empty(), (button) -> signAlbum(), true)
+            .sprite(TEXTURE, 22, 22)
+            .size(leftPos + 46, topPos + 108)
+            .build();
+        signButton.setPosition(leftPos + 46, topPos + 108);
         MutableComponent component = Component.translatable("book.finalizeButton")
                 .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
         signButton.setTooltip(Tooltip.create(component));
         addRenderableWidget(signButton);
 
         // CANCEL
-        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22, 171, 0,
-                22, TEXTURE, textureWidth, textureHeight,
-                b -> cancelSigning(), CommonComponents.GUI_CANCEL);
+//        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22, 171, 0,
+//                22, TEXTURE, textureWidth, textureHeight,
+//                b -> cancelSigning(), CommonComponents.GUI_CANCEL);
+        cancelSigningButton = SpriteIconButton
+            .builder(Component.empty(), (button) -> cancelSigning(), true)
+            .sprite(TEXTURE, 22, 22)
+            .size(leftPos + 83, topPos + 108)
+            .build();
+        cancelSigningButton.setPosition(leftPos + 83, topPos + 108);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
         addRenderableWidget(cancelSigningButton);
 
@@ -111,7 +123,7 @@ public class BookSigningScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         updateButtons();
 
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 
         RenderUtil.withColorMultiplied(bookColor, () -> {
             guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,

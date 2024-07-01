@@ -18,7 +18,7 @@ import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -142,28 +142,48 @@ public class SpreadBookEditScreen extends Screen {
 
         addRenderableWidget(rightPageTextBox);
 
-        ImageButton prevButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
-                295, 0, 15, TEXTURE, 512, 512,
-                (button) -> this.pageBack());
+//        ImageButton prevButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
+//                295, 0, 15, TEXTURE, 512, 512,
+//                (button) -> this.pageBack());
+        SpriteIconButton prevButton = SpriteIconButton
+            .builder(Component.empty(), (button) -> this.pageBack(), true)
+            .sprite(TEXTURE, 13, 15)
+            .build();
+        prevButton.setPosition(leftPos + 12, topPos + 156);
         prevButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
         this.prevButton = addRenderableWidget(prevButton);
 
-        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-                308, 0, 15, TEXTURE, 512, 512,
-                (button) -> this.pageForward());
+//        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
+//                308, 0, 15, TEXTURE, 512, 512,
+//                (button) -> this.pageForward());
+        SpriteIconButton nextButton = SpriteIconButton
+            .builder(Component.empty(), (button) -> this.pageForward(), true)
+            .sprite(TEXTURE, 13, 15)
+            .build();
+        nextButton.setPosition(leftPos + 270, topPos + 156);
         nextButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
         this.nextButton = addRenderableWidget(nextButton);
 
-        this.enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22, 321, 0,
-                22, TEXTURE, 512, 512,
-                b -> enterSignMode(), Component.translatable("book.signButton"));
+//        this.enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22,
+//                321, 0, 22, TEXTURE, 512, 512,
+//                b -> enterSignMode(), Component.translatable("book.signButton"));
+        this.enterSignModeButton = SpriteIconButton
+            .builder(Component.translatable("book.signButton"), (button) -> enterSignMode(), true)
+            .sprite(TEXTURE, 22, 22)
+            .build();
+        this.enterSignModeButton.setPosition(leftPos - 24, topPos + 18);
         this.enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
         addRenderableWidget(this.enterSignModeButton);
 
         if (isFormattingAllowed()) {
-            this.insertSectionSignButton = new ImageButton(width - 22, 2, 22, 22, 343, 0,
-                    22, TEXTURE, 512, 512,
-                    b -> insertSectionSign(), Component.translatable("gui.scholar.insert_section_sign"));
+//            this.insertSectionSignButton = new ImageButton(width - 22, 2, 22, 22,
+//                    343, 0, 22, TEXTURE, 512, 512,
+//                    b -> insertSectionSign(), Component.translatable("gui.scholar.insert_section_sign"));
+            this.insertSectionSignButton = SpriteIconButton
+                .builder(Component.translatable("gui.scholar.insert_section_sign"), (button) -> insertSectionSign(), true)
+                .sprite(TEXTURE, 22, 22)
+                .build();
+            this.insertSectionSignButton.setPosition(width - 22, 2);
             MutableComponent tooltip = Component.translatable("gui.scholar.insert_section_sign")
                     .append(Component.literal(" [").withStyle(ChatFormatting.DARK_GRAY)
                         .append(Component.literal("CTRL+F").withStyle(ChatFormatting.GRAY))
@@ -283,7 +303,7 @@ public class SpreadBookEditScreen extends Screen {
     }
 
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 
         if (insertSectionSignButton != null)
             insertSectionSignButton.active = getFocused() instanceof TextBox;

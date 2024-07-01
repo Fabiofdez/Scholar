@@ -1,18 +1,21 @@
 package io.github.mortuusars.scholar.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,8 +28,22 @@ public class NbtTransferringRecipe extends CustomRecipe {
     private final Ingredient transferIngredient;
     private final NonNullList<Ingredient> ingredients;
 
-    public NbtTransferringRecipe(ResourceLocation id, Ingredient transferIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
-        super(id, CraftingBookCategory.MISC);
+    public final Codec<NbtTransferringRecipe> CODEC = new Codec<>() {
+        @Override
+        public <T> DataResult<Pair<NbtTransferringRecipe, T>> decode(DynamicOps<T> ops, T input) {
+            // TODO
+            return null;
+        }
+
+        @Override
+        public <T> DataResult<T> encode(NbtTransferringRecipe input, DynamicOps<T> ops, T prefix) {
+            // TODO
+            return null;
+        }
+    };
+
+    public NbtTransferringRecipe(Ingredient transferIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
+        super(CraftingBookCategory.MISC);
         this.transferIngredient = transferIngredient;
         this.ingredients = ingredients;
         this.result = result;
@@ -117,26 +134,26 @@ public class NbtTransferringRecipe extends CustomRecipe {
 
     public static class Serializer implements RecipeSerializer<NbtTransferringRecipe> {
         @Override
-        public @NotNull NbtTransferringRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            Ingredient sourceIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "source"));
-            NonNullList<Ingredient> ingredients = getIngredients(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipe, "result"));
-
-            if (sourceIngredient.isEmpty())
-                throw new JsonParseException("Recipe should have 'source' ingredient.");
-
-            return new NbtTransferringRecipe(recipeId, sourceIngredient, ingredients, result);
+        public Codec<NbtTransferringRecipe> codec() {
+            return null;
+//            return RecordCodecBuilder.create(new Function<RecordCodecBuilder.Instance<NbtTransferringRecipe>, App<RecordCodecBuilder.Mu<NbtTransferringRecipe>, NbtTransferringRecipe>>() {
+//                @Override
+//                public App<RecordCodecBuilder.Mu<NbtTransferringRecipe>, NbtTransferringRecipe> apply(RecordCodecBuilder.Instance<NbtTransferringRecipe> nbtTransferringRecipeInstance) {
+//
+//                    return null;
+//                }
+//            })
         }
 
         @Override
-        public @NotNull NbtTransferringRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @NotNull NbtTransferringRecipe fromNetwork(FriendlyByteBuf buffer) {
             Ingredient transferredIngredient = Ingredient.fromNetwork(buffer);
             int ingredientsCount = buffer.readVarInt();
             NonNullList<Ingredient> ingredients = NonNullList.withSize(ingredientsCount, Ingredient.EMPTY);
             ingredients.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
             ItemStack result = buffer.readItem();
 
-            return new NbtTransferringRecipe(recipeId, transferredIngredient, ingredients, result);
+            return new NbtTransferringRecipe( transferredIngredient, ingredients, result);
         }
 
         @Override
@@ -149,14 +166,12 @@ public class NbtTransferringRecipe extends CustomRecipe {
             buffer.writeItem(recipe.getResult());
         }
 
-        private NonNullList<Ingredient> getIngredients(JsonArray jsonArray) {
+        private NonNullList<Ingredient> getIngredients(FriendlyByteBuf buffer) {
             NonNullList<Ingredient> ingredients = NonNullList.create();
 
-            for (int i = 0; i < jsonArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i));
-                if (!ingredient.isEmpty())
-                    ingredients.add(ingredient);
-            }
+            Ingredient ingredient = Ingredient.fromNetwork(buffer);
+            if (!ingredient.isEmpty())
+                ingredients.add(ingredient);
 
             if (ingredients.isEmpty())
                 throw new JsonParseException("No ingredients for a recipe.");

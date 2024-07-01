@@ -2,26 +2,26 @@ package io.github.mortuusars.scholar.recipe;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
-import io.github.mortuusars.scholar.item.ColoredWrittenBookItem;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.WritableBookItem;
+import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.item.crafting.BookCloningRecipe;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Vanilla BookCloningRecipe is hardcoded to use vanilla writable/written book.
  * To support other books (colored) we need to check for type instead.
  */
 public class ScholarBookCloningRecipe extends BookCloningRecipe {
-    public ScholarBookCloningRecipe(ResourceLocation id, CraftingBookCategory category) {
-        super(id, category);
+    public ScholarBookCloningRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override
