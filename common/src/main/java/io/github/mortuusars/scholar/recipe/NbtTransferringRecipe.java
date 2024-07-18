@@ -1,10 +1,7 @@
 package io.github.mortuusars.scholar.recipe;
 
-import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -28,24 +25,11 @@ public class NbtTransferringRecipe extends CustomRecipe {
     private final Ingredient transferIngredient;
     private final NonNullList<Ingredient> ingredients;
 
-    public final Codec<NbtTransferringRecipe> CODEC = new Codec<>() {
-        @Override
-        public <T> DataResult<Pair<NbtTransferringRecipe, T>> decode(DynamicOps<T> ops, T input) {
-            // TODO
-            return null;
-        }
-
-        @Override
-        public <T> DataResult<T> encode(NbtTransferringRecipe input, DynamicOps<T> ops, T prefix) {
-            // TODO
-            return null;
-        }
-    };
-
-    public NbtTransferringRecipe(Ingredient transferIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
+    public NbtTransferringRecipe(Ingredient transferIngredient, List<Ingredient> ingredients, ItemStack result) {
         super(CraftingBookCategory.MISC);
         this.transferIngredient = transferIngredient;
-        this.ingredients = ingredients;
+        this.ingredients = NonNullList.create();
+        this.ingredients.addAll(ingredients);
         this.result = result;
     }
 
@@ -134,15 +118,12 @@ public class NbtTransferringRecipe extends CustomRecipe {
 
     public static class Serializer implements RecipeSerializer<NbtTransferringRecipe> {
         @Override
-        public Codec<NbtTransferringRecipe> codec() {
-            return null;
-//            return RecordCodecBuilder.create(new Function<RecordCodecBuilder.Instance<NbtTransferringRecipe>, App<RecordCodecBuilder.Mu<NbtTransferringRecipe>, NbtTransferringRecipe>>() {
-//                @Override
-//                public App<RecordCodecBuilder.Mu<NbtTransferringRecipe>, NbtTransferringRecipe> apply(RecordCodecBuilder.Instance<NbtTransferringRecipe> nbtTransferringRecipeInstance) {
-//
-//                    return null;
-//                }
-//            })
+        public @NotNull Codec<NbtTransferringRecipe> codec() {
+            return RecordCodecBuilder.create((instance) -> instance.group(
+                Ingredient.CODEC.fieldOf("source").forGetter(NbtTransferringRecipe::getTransferIngredient),
+                Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(NbtTransferringRecipe::getIngredients),
+                ItemStack.CODEC.fieldOf("result").forGetter(NbtTransferringRecipe::getResult)
+            ).apply(instance, NbtTransferringRecipe::new));
         }
 
         @Override
@@ -153,7 +134,7 @@ public class NbtTransferringRecipe extends CustomRecipe {
             ingredients.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
             ItemStack result = buffer.readItem();
 
-            return new NbtTransferringRecipe( transferredIngredient, ingredients, result);
+            return new NbtTransferringRecipe(transferredIngredient, ingredients, result);
         }
 
         @Override
@@ -164,20 +145,6 @@ public class NbtTransferringRecipe extends CustomRecipe {
                 ingredient.toNetwork(buffer);
             }
             buffer.writeItem(recipe.getResult());
-        }
-
-        private NonNullList<Ingredient> getIngredients(FriendlyByteBuf buffer) {
-            NonNullList<Ingredient> ingredients = NonNullList.create();
-
-            Ingredient ingredient = Ingredient.fromNetwork(buffer);
-            if (!ingredient.isEmpty())
-                ingredients.add(ingredient);
-
-            if (ingredients.isEmpty())
-                throw new JsonParseException("No ingredients for a recipe.");
-            else if (ingredients.size() > 3 * 3)
-                throw new JsonParseException("Too many ingredients for a recipe. The maximum is 9.");
-            return ingredients;
         }
     }
 }

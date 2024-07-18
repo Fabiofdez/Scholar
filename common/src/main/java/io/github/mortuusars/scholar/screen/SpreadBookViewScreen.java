@@ -5,13 +5,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.gui.BookUI;
 import io.github.mortuusars.scholar.util.RenderUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.SpriteIconButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -104,30 +104,28 @@ public class SpreadBookViewScreen extends Screen {
 
     protected void createMenuControls() {
         if (Config.Client.WRITTEN_SHOW_DONE_BUTTON.get()) {
-            this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
-                    (button) -> this.onClose()).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
+            this.addRenderableWidget(
+                Button
+                .builder(CommonComponents.GUI_DONE, (button) -> this.onClose())
+                .bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20)
+                .build()
+            );
         }
     }
 
     protected void createPageControlButtons() {
-//        ImageButton prevButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
-//                295, 0, 15, TEXTURE, 512, 512,
-//                (button) -> this.pageBack());
-        SpriteIconButton prevButton = SpriteIconButton.builder(Component.empty(), (button) -> this.pageBack(), true)
-            .sprite(TEXTURE, 13, 15)
-            .build();
-        prevButton.setPosition(leftPos + 12, topPos + 156);
+        BookUI.ImageButton prevButton = new BookUI.ImageButton(leftPos + 12, topPos + 156, 13, 15,
+                295, 0, 15, TEXTURE, 512, 512,
+                (button) -> this.pageBack());
         prevButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
         this.prevButton = this.addRenderableWidget(prevButton);
-//        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-//                308, 0, 15, TEXTURE, 512, 512,
-//                (button) -> this.pageForward());
-        SpriteIconButton nextButton = SpriteIconButton.builder(Component.empty(), (button) -> this.pageForward(), true)
-            .sprite(TEXTURE, 13, 15)
-            .build();
-        nextButton.setPosition(leftPos + 270, topPos + 156);
+
+        BookUI.ImageButton nextButton = new BookUI.ImageButton(leftPos + 270, topPos + 156, 13, 15,
+                308, 0, 15, TEXTURE, 512, 512,
+                (button) -> this.pageForward());
         nextButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
         this.nextButton = this.addRenderableWidget(nextButton);
+
         this.updateButtonVisibility();
     }
 
@@ -199,17 +197,7 @@ public class SpreadBookViewScreen extends Screen {
     }
 
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
-
-        RenderUtil.withColorMultiplied(bookColor, () -> {
-            // Cover
-            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                    0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-        });
-
-        // Pages
-        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         drawPageNumbers(guiGraphics, currentSpread);
 
@@ -231,8 +219,21 @@ public class SpreadBookViewScreen extends Screen {
         Style style = this.getClickedComponentStyleAt(mouseX, mouseY);
         if (style != null)
             guiGraphics.renderComponentHoverEffect(this.font, style, mouseX, mouseY);
+    }
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+
+        RenderUtil.withColorMultiplied(bookColor, () -> {
+            // Cover
+            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+                0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+        });
+
+        // Pages
+        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+            0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
     protected void drawPageNumbers(GuiGraphics guiGraphics, int currentSpreadIndex) {

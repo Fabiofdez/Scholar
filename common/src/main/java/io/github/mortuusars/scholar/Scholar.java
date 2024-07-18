@@ -60,8 +60,9 @@ public class Scholar {
     }
 
     public static class RecipeSerializers {
+
         public static final Supplier<RecipeSerializer<?>> NBT_TRANSFERRING = Register.recipeSerializer("nbt_transferring",
-                NbtTransferringRecipe.Serializer::new);
+            NbtTransferringRecipe.Serializer::new);
         public static final Supplier<RecipeSerializer<?>> BOOK_CLONING = Register.recipeSerializer("crafting_special_bookcloning",
                 () -> new SimpleCraftingRecipeSerializer<>(ScholarBookCloningRecipe::new));
         static void init() { }

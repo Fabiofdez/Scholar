@@ -8,6 +8,7 @@ public class RenderUtil {
         int green = color >> 8 & 0xFF;
         int blue = color & 0xFF;
 
+        RenderSystem.enableBlend();
         RenderSystem.setShaderColor(red / 255f, green / 255f, blue / 255f, 1.0f);
         code.run();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
