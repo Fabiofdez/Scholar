@@ -23,6 +23,9 @@
     ],
     "jei_mod_plugin": [
       "io.github.mortuusars.scholar.integration.jei.ScholarJeiPlugin"
+    ],
+    "controlify": [
+      "io.github.mortuusars.scholar.fabric.ControlifyEntrypoint"
     ]
   },
   "mixins": [

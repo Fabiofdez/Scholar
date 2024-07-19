@@ -65,11 +65,11 @@ public class LecternSpreadScreen extends SpreadBookViewScreen implements MenuAcc
                 this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
                         button -> this.onClose()).bounds(this.width / 2 - 100, topPos + BOOK_HEIGHT + 12, 98, 20).build());
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
-                        button -> this.sendButtonClick(3)).bounds(this.width / 2 + 2, topPos + BOOK_HEIGHT + 12, 98, 20).build());
+                        button -> this.takeBook()).bounds(this.width / 2 + 2, topPos + BOOK_HEIGHT + 12, 98, 20).build());
             }
             else {
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
-                        (button) -> this.sendButtonClick(3)).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
+                        (button) -> this.takeBook()).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
             }
         } else {
             super.createMenuControls();
@@ -77,12 +77,12 @@ public class LecternSpreadScreen extends SpreadBookViewScreen implements MenuAcc
     }
 
     @Override
-    protected void pageBack() {
+    public void pageBack() {
         this.sendButtonClick(1);
     }
 
     @Override
-    protected void pageForward() {
+    public void pageForward() {
         this.sendButtonClick(2);
     }
 
@@ -98,6 +98,10 @@ public class LecternSpreadScreen extends SpreadBookViewScreen implements MenuAcc
     private void sendButtonClick(int pageData) {
         if (Minecraft.getInstance().gameMode != null)
             Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, pageData);
+    }
+
+    public void takeBook() {
+        this.sendButtonClick(3);
     }
 
     @Override

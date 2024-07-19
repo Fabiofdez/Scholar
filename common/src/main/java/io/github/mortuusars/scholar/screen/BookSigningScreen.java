@@ -38,8 +38,8 @@ public class BookSigningScreen extends Screen {
     protected int imageWidth, imageHeight, leftPos, topPos, textureWidth, textureHeight;
 
     protected TextBox titleTextBox;
-    protected BookUI.ImageButton signButton;
-    protected BookUI.ImageButton cancelSigningButton;
+    public BookUI.ImageButton signButton;
+    public BookUI.ImageButton cancelSigningButton;
 
     protected String titleText = "";
 

@@ -37,5 +37,14 @@
   "gui.scholar.insert_section_sign.help1": "Section sign symbol with combination of a specific letter is used to apply formatting to a part of the text.",
   "gui.scholar.insert_section_sign.help2": "Press [%s] to learn more",
 
-  "subtitle.scholar.book.signed": "Book signing scribbles"
+  "subtitle.scholar.book.signed": "Book signing scribbles",
+
+  "gui.scholar.controlify.category": "Scholar",
+  "gui.scholar.controlify.book_prev_page": "Previous Page",
+  "gui.scholar.controlify.book_next_page": "Next Page",
+  "gui.scholar.controlify.book_insert_format": "Insert Format Symbol",
+  "gui.scholar.controlify.book_sign": "Sign Book",
+  "gui.scholar.controlify.book_finalize": "Finalize Book",
+  "gui.scholar.controlify.book_cancel_sign": "Cancel Signing Book",
+  "gui.scholar.controlify.lectern_take_book": "Take Book from Lectern"
 }

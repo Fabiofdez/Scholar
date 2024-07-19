@@ -68,8 +68,8 @@ public class SpreadBookViewScreen extends Screen {
 
     protected int leftPos;
     protected int topPos;
-    protected Button nextButton;
-    protected Button prevButton;
+    public Button nextButton;
+    public Button prevButton;
 
     public SpreadBookViewScreen(BookAccess bookAccess, int bookColor) {
         super(GameNarrator.NO_TITLE);

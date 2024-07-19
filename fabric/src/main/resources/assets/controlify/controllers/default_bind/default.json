@@ -1,0 +1,25 @@
+{
+  "defaults": {
+    "scholar:book_prev_page": {
+      "axis": "controlify:axis/left_trigger"
+    },
+    "scholar:book_next_page": {
+      "axis": "controlify:axis/right_trigger"
+    },
+    "scholar:book_insert_format": {
+      "button": "controlify:button/north"
+    },
+    "scholar:book_sign": {
+      "button": "controlify:button/west"
+    },
+    "scholar:book_finalize": {
+      "button": "controlify:button/west"
+    },
+    "scholar:book_cancel_sign": {
+      "button": "controlify:button/east"
+    },
+    "scholar:lectern_take_book": {
+      "button": "controlify:button/west"
+    }
+  }
+}

@@ -86,11 +86,11 @@ public class SpreadBookEditScreen extends Screen {
 
     protected int leftPos;
     protected int topPos;
-    protected Button nextButton;
-    protected Button prevButton;
-    protected Button enterSignModeButton;
+    public Button nextButton;
+    public Button prevButton;
+    public Button enterSignModeButton;
     @Nullable
-    protected Button insertSectionSignButton;
+    public Button insertSectionSignButton;
 
     protected int currentSpread;
     protected boolean isModified;
@@ -164,7 +164,7 @@ public class SpreadBookEditScreen extends Screen {
         if (isFormattingAllowed()) {
             BookUI.ImageButton insertSectionSignButton = new BookUI.ImageButton(width - 22, 2, 22, 22,
                     343, 0, 22, TEXTURE, 512, 512,
-                    b -> insertSectionSign());
+                    (b) -> insertSectionSign());
             insertSectionSignButton.setMessage(Component.translatable("gui.scholar.insert_section_sign"));
             MutableComponent tooltip = Component.translatable("gui.scholar.insert_section_sign")
                     .append(Component.literal(" [").withStyle(ChatFormatting.DARK_GRAY)
