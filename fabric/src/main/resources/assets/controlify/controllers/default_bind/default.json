@@ -18,6 +18,9 @@
     "scholar:book_cancel_sign": {
       "button": "controlify:button/east"
     },
+    "scholar:book_exit": {
+      "button": "controlify:button/east"
+    },
     "scholar:lectern_take_book": {
       "button": "controlify:button/west"
     }

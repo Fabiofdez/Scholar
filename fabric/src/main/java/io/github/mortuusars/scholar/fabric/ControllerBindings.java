@@ -23,6 +23,7 @@ public class ControllerBindings {
   public static InputBindingSupplier BOOK_SIGN;
   public static InputBindingSupplier BOOK_FINALIZE;
   public static InputBindingSupplier BOOK_CANCEL_SIGN;
+  public static InputBindingSupplier BOOK_EXIT;
   public static InputBindingSupplier LECTERN_TAKE_BOOK;
 
   public static void init() {
@@ -50,7 +51,7 @@ public class ControllerBindings {
         .id(Scholar.resource("book_insert_format"))
         .category(scholarCategory)
         .name(Component.translatable("gui.scholar.controlify.book_insert_format"))
-        .description(Component.translatable("gui.scholar.controlify.book_insert_format"))
+        .description(Component.translatable("gui.scholar.controlify.book_insert_format.desc"))
         .allowedContexts(editContext)
     );
 
@@ -74,6 +75,13 @@ public class ControllerBindings {
         .name(Component.translatable("gui.scholar.controlify.book_cancel_sign"))
         .description(CommonComponents.GUI_CANCEL)
         .allowedContexts(signContext));
+
+    BOOK_EXIT = ControlifyBindApi.get().registerBinding((builder) -> builder
+        .id(Scholar.resource("book_exit"))
+        .category(scholarCategory)
+        .name(Component.translatable("controlify.guide.container.exit"))
+        .description(Component.translatable("gui.scholar.controlify.book_exit.desc"))
+        .allowedContexts(viewContext, editContext));
 
     LECTERN_TAKE_BOOK = ControlifyBindApi.get().registerBinding((builder) -> builder
         .id(Scholar.resource("lectern_take_book"))

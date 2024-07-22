@@ -184,6 +184,8 @@ public class SpreadBookEditScreen extends Screen {
         this.updateButtonVisibility();
 
         this.createMenuControls();
+
+        setInitialFocus(leftPageTextBox);
     }
 
     protected void createMenuControls() {

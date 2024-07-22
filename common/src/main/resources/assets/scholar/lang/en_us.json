@@ -43,8 +43,10 @@
   "gui.scholar.controlify.book_prev_page": "Previous Page",
   "gui.scholar.controlify.book_next_page": "Next Page",
   "gui.scholar.controlify.book_insert_format": "Insert Format Symbol",
+  "gui.scholar.controlify.book_insert_format.desc": "Format",
   "gui.scholar.controlify.book_sign": "Sign Book",
   "gui.scholar.controlify.book_finalize": "Finalize Book",
   "gui.scholar.controlify.book_cancel_sign": "Cancel Signing Book",
+  "gui.scholar.controlify.book_exit.desc": "Exit Book",
   "gui.scholar.controlify.lectern_take_book": "Take Book from Lectern"
 }
