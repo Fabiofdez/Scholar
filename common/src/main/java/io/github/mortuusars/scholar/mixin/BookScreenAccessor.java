@@ -10,6 +10,6 @@ import java.util.List;
 @Mixin(Screen.class)
 public interface BookScreenAccessor {
 
-  @Accessor("renderables")
-  List<Renderable> getRenderables();
+    @Accessor("renderables")
+    List<Renderable> getRenderables();
 }

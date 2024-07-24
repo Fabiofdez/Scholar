@@ -11,29 +11,29 @@ import io.github.mortuusars.scholar.screen.SpreadBookEditScreen;
 import io.github.mortuusars.scholar.screen.SpreadBookViewScreen;
 
 public class ControlifyEntrypoint implements dev.isxander.controlify.api.entrypoint.ControlifyEntrypoint {
-  @Override
-  public void onControllersDiscovered(ControlifyApi controlifyApi) {
-  }
+    @Override
+    public void onControllersDiscovered(ControlifyApi controlifyApi) {
+    }
 
-  @Override
-  public void onControlifyInit(ControlifyApi controlify) {
-    ControllerBindings.init();
+    @Override
+    public void onControlifyInit(ControlifyApi controlify) {
+        ControllerBindings.init();
 
-    ScreenProcessorProvider.registerProvider(
-        SpreadBookViewScreen.class,
-        SpreadBookViewScreenProcessor::new
-    );
-    ScreenProcessorProvider.registerProvider(
-        LecternSpreadScreen.class,
-        SpreadBookViewScreenProcessor::new
-    );
-    ScreenProcessorProvider.registerProvider(
-        SpreadBookEditScreen.class,
-        SpreadBookEditScreenProcessor::new
-    );
-    ScreenProcessorProvider.registerProvider(
-        BookSigningScreen.class,
-        BookSigningScreenProcessor::new
-    );
-  }
+        ScreenProcessorProvider.registerProvider(
+            SpreadBookViewScreen.class,
+            SpreadBookViewScreenProcessor::new
+        );
+        ScreenProcessorProvider.registerProvider(
+            LecternSpreadScreen.class,
+            SpreadBookViewScreenProcessor::new
+        );
+        ScreenProcessorProvider.registerProvider(
+            SpreadBookEditScreen.class,
+            SpreadBookEditScreenProcessor::new
+        );
+        ScreenProcessorProvider.registerProvider(
+            BookSigningScreen.class,
+            BookSigningScreenProcessor::new
+        );
+    }
 }

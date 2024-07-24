@@ -9,51 +9,51 @@ import io.github.mortuusars.scholar.screen.SpreadBookViewScreen;
 import net.minecraft.network.chat.Component;
 
 public class SpreadBookViewScreenProcessor<T extends SpreadBookViewScreen> extends BookScreenProcessor<T> {
-  public SpreadBookViewScreenProcessor(T screen) {
-    super(screen);
-  }
-
-  @Override
-  protected void handleTabNavigation(ControllerEntity controller) {
-    super.handleTabNavigation(controller);
-    if (ControllerBindings.BOOK_PREV_PAGE.on(controller).justPressed()) {
-      this.screen.prevButton.onPress();
-    } else if (ControllerBindings.BOOK_NEXT_PAGE.on(controller).justPressed()) {
-      this.screen.nextButton.onPress();
+    public SpreadBookViewScreenProcessor(T screen) {
+        super(screen);
     }
-  }
 
-  @Override
-  protected void handleButtons(ControllerEntity controller) {
-    super.handleButtons(controller);
-    if (ControlifyBindings.GUI_BACK.on(controller).justPressed()) {
-      this.screen.onClose();
-    } else if (this.screen instanceof LecternSpreadScreen && ControllerBindings.LECTERN_TAKE_BOOK.on(controller).justPressed()) {
-      ((LecternSpreadScreen) this.screen).takeBook();
+    @Override
+    protected void handleTabNavigation(ControllerEntity controller) {
+        super.handleTabNavigation(controller);
+        if (ControllerBindings.BOOK_PREV_PAGE.on(controller).justPressed()) {
+            this.screen.prevButton.onPress();
+        } else if (ControllerBindings.BOOK_NEXT_PAGE.on(controller).justPressed()) {
+            this.screen.nextButton.onPress();
+        }
     }
-  }
 
-  @Override
-  protected void buildGuides() {
-    setLeftLayout(
-        makeRow(
-            makeGuideFor(ControllerBindings.BOOK_EXIT, ALWAYS, false)
-        ),
-        makeRow(
-            makeGuideFor(ControllerBindings.BOOK_PREV_PAGE, ALWAYS, false)
-        )
-    );
+    @Override
+    protected void handleButtons(ControllerEntity controller) {
+        super.handleButtons(controller);
+        if (ControlifyBindings.GUI_BACK.on(controller).justPressed()) {
+            this.screen.onClose();
+        } else if (this.screen instanceof LecternSpreadScreen && ControllerBindings.LECTERN_TAKE_BOOK.on(controller).justPressed()) {
+            ((LecternSpreadScreen) this.screen).takeBook();
+        }
+    }
 
-    setRightLayout(
-        makeRow(
-            makeGuideFor(ControllerBindings.BOOK_NEXT_PAGE, ALWAYS, true)
-        )
-    );
+    @Override
+    protected void buildGuides() {
+        setLeftLayout(
+            makeRow(
+                makeGuideFor(ControllerBindings.BOOK_EXIT, ALWAYS, false)
+            ),
+            makeRow(
+                makeGuideFor(ControllerBindings.BOOK_PREV_PAGE, ALWAYS, false)
+            )
+        );
 
-    getWidget(Component.translatable("lectern.take_book"))
-        .ifPresent((btn) -> ButtonGuideApi.addGuideToButton(btn,
-            ControllerBindings.LECTERN_TAKE_BOOK,
-            (b) -> screen instanceof LecternSpreadScreen
-        ));
-  }
+        setRightLayout(
+            makeRow(
+                makeGuideFor(ControllerBindings.BOOK_NEXT_PAGE, ALWAYS, true)
+            )
+        );
+
+        getWidget(Component.translatable("lectern.take_book"))
+            .ifPresent((btn) -> ButtonGuideApi.addGuideToButton(btn,
+                ControllerBindings.LECTERN_TAKE_BOOK,
+                (b) -> screen instanceof LecternSpreadScreen
+            ));
+    }
 }
