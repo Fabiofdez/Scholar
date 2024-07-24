@@ -25,11 +25,10 @@ public class NbtTransferringRecipe extends CustomRecipe {
     private final Ingredient transferIngredient;
     private final NonNullList<Ingredient> ingredients;
 
-    public NbtTransferringRecipe(Ingredient transferIngredient, List<Ingredient> ingredients, ItemStack result) {
+    public NbtTransferringRecipe(Ingredient transferIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
         super(CraftingBookCategory.MISC);
         this.transferIngredient = transferIngredient;
-        this.ingredients = NonNullList.create();
-        this.ingredients.addAll(ingredients);
+        this.ingredients = ingredients;
         this.result = result;
     }
 
@@ -122,8 +121,12 @@ public class NbtTransferringRecipe extends CustomRecipe {
             return RecordCodecBuilder.create((instance) -> instance.group(
                 Ingredient.CODEC.fieldOf("source").forGetter(NbtTransferringRecipe::getTransferIngredient),
                 Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(NbtTransferringRecipe::getIngredients),
-                ItemStack.CODEC.fieldOf("result").forGetter(NbtTransferringRecipe::getResult)
-            ).apply(instance, NbtTransferringRecipe::new));
+                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(NbtTransferringRecipe::getResult)
+            ).apply(instance, (src, ingredients, result) -> {
+                NonNullList<Ingredient> ingredientsChecked = NonNullList.create();
+                ingredientsChecked.addAll(ingredients);
+                return new NbtTransferringRecipe(src, ingredientsChecked, result);
+            }));
         }
 
         @Override
