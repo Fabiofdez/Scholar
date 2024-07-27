@@ -19,6 +19,7 @@ public class BookSigningScreenProcessor<T extends BookSigningScreen> extends Boo
         if (ControllerBindings.BOOK_FINALIZE.on(controller).justPressed()) {
             this.screen.signButton.onPress();
         } else if (ControllerBindings.BOOK_CANCEL_SIGN.on(controller).justPressed()) {
+            playClackSound();
             this.screen.cancelSigningButton.onPress();
         }
     }
