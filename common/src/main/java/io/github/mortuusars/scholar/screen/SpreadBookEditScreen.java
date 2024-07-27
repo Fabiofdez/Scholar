@@ -24,6 +24,7 @@ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -42,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class SpreadBookEditScreen extends Screen {
 
@@ -61,7 +63,48 @@ public class SpreadBookEditScreen extends Screen {
         }
     }
 
-    public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book.png");
+    public enum FormatTool {
+        RESET("§r", "§r"), // 'unlabelled'
+        BOLD("§lB§r", "§l"),
+        ITALIC("§oI§r", "§o"),
+        UNDERLINE("§nU§r", "§n"),
+        STRIKETHROUGH("§mS§r", "§m");
+
+        public final String LABEL;
+        public final String SIGN;
+        FormatTool(final String label, final String sign) {
+            this.LABEL = label;
+            this.SIGN = sign;
+        }
+    }
+
+    public enum ColorTool {
+        BLACK(0x333333,  "§0"),
+        DARK_BLUE(0x0000AA,  "§1"),
+        DARK_GREEN(0x00AA00,  "§2"),
+        DARK_AQUA(0x00AAAA,  "§3"),
+        DARK_RED(0xAA0000,  "§4"),
+        DARK_PURPLE(0xAA00AA,  "§5"),
+        GOLD(0xFFAA00,  "§6"),
+        GRAY(0xBBBBBB,  "§7"),
+        DARK_GRAY(0x777777,  "§8"),
+        BLUE(0x5555FF,  "§9"),
+        GREEN(0x55FF55,  "§a"),
+        AQUA(0x55FFFF,  "§b"),
+        RED(0xFF5555,  "§c"),
+        LIGHT_PURPLE(0xFF55FF,  "§d"),
+        YELLOW(0xFFFF55,  "§e"),
+        WHITE(0xFFFFFF,  "§f");
+
+        public final int LABEL_COLOR;
+        public final String SIGN;
+        ColorTool(final int color, final String sign) {
+            this.LABEL_COLOR = color;
+            this.SIGN = sign;
+        }
+    }
+
+    public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book_format_ext.png");
 
     public static final int BOOK_WIDTH = 295;
     public static final int BOOK_HEIGHT = 180;
@@ -91,9 +134,13 @@ public class SpreadBookEditScreen extends Screen {
     public Button enterSignModeButton;
     @Nullable
     public Button insertSectionSignButton;
+    public BookUI.ToggleImageButton formatToolsToggleButton;
+    public List<BookUI.ToolImageButton> formatTools = Lists.newArrayList();
+    public Map<Integer, BookUI.ToolImageButton> colorTools = new HashMap<>(16);
 
     protected int currentSpread;
     protected boolean isModified;
+    protected boolean showFormatTools;
 
     public SpreadBookEditScreen(Player owner, ItemStack bookStack, InteractionHand hand) {
         super(GameNarrator.NO_TITLE);
@@ -179,6 +226,17 @@ public class SpreadBookEditScreen extends Screen {
                             .withStyle(ChatFormatting.DARK_GRAY)));
             insertSectionSignButton.setTooltip(Tooltip.create(tooltip));
             this.insertSectionSignButton = addRenderableOnly(insertSectionSignButton);
+
+            BookUI.ToggleImageButton formatToolsToggle = new BookUI.ToggleImageButton(leftPos - 24, topPos + 50, 22, 22,
+                365, 0, 22, 44, 66, TEXTURE, 512, 512,
+                (b) -> toggleFormatTools(), showFormatTools);
+            formatToolsToggle.setTooltips(
+                Component.translatable("gui.scholar.hide_format_tools"),
+                Component.translatable("gui.scholar.show_format_tools")
+            );
+            this.formatToolsToggleButton = this.addRenderableWidget(formatToolsToggle);
+
+            createFormatAndColorTools();
         }
 
         this.updateButtonVisibility();
@@ -195,6 +253,82 @@ public class SpreadBookEditScreen extends Screen {
         }
     }
 
+    private float randomPitch(float min, float max) {
+        return min + (float) Math.random() * (max - min);
+    }
+
+    protected void createFormatAndColorTools() {
+        this.formatTools.clear();
+        this.colorTools.clear();
+
+        // Formatting Quill Nibs
+        int buttonY = topPos + 17;
+        for (FormatTool toolInfo : FormatTool.values()) {
+            createFormatTool(toolInfo, buttonY);
+            buttonY += 25;
+        }
+
+        // Color Ink Flasks
+        ColorTool[] colorTools = ColorTool.values();
+        int initialX = leftPos - 74;
+        int initialY = topPos + 81;
+        int xGap = 3, yGap = 7;
+        for (int y = 0; y < 4; y++) {
+            int rowY = initialY + (18 * y) + (yGap * y);
+            for (int x = 0; x < 4; x++) {
+                int toolX = initialX + (14 * x) + (xGap * x);
+                createColorTool(colorTools[x + 4 * y], toolX, rowY);
+            }
+        }
+    }
+
+    protected void createFormatTool(FormatTool toolInfo, int y) {
+        BookUI.LabeledImageButton btn = new BookUI.LabeledImageButton(
+            leftPos + BOOK_WIDTH + 13, y, 56, 21,
+            387, 0, 21, 42, 63, TEXTURE, 512, 512,
+            (b) -> {
+                insertFormatting(toolInfo.SIGN);
+                Minecraft.getInstance().getSoundManager()
+                    .play(SimpleSoundInstance.forUI(SoundEvents.ITEM_FRAME_ADD_ITEM, randomPitch(1f, 1.5f), 0.5f));
+            }, font, 18, toolInfo.LABEL
+        );
+        btn.setLabelColors(0x603000, 0x502000);
+        btn.visible = showFormatTools;
+        formatTools.add(this.addRenderableOnly(btn));
+    }
+
+    protected void createColorTool(ColorTool toolInfo, int x, int y) {
+        BookUI.ToolImageButton btn = new BookUI.ToolImageButton(
+            x, y, 14, 18,
+            443, 0, 18, 36, 54, TEXTURE, 512, 512,
+            (b) -> {
+                SoundManager soundMgr = Minecraft.getInstance().getSoundManager();
+                insertFormatting(toolInfo.SIGN);
+                soundMgr.play(SimpleSoundInstance.forUI(SoundEvents.ITEM_FRAME_ADD_ITEM, randomPitch(1f, 1.5f), 0.5f));
+                soundMgr.play(SimpleSoundInstance.forUI(SoundEvents.BOTTLE_FILL, randomPitch(1.5f, 2f), 0.3f));
+            }
+        );
+        btn.visible = showFormatTools;
+        colorTools.put(toolInfo.LABEL_COLOR, this.addRenderableOnly(btn));
+    }
+
+    protected void toggleFormatTools() {
+        this.showFormatTools = formatToolsToggleButton.isToggledOn();
+        Minecraft.getInstance()
+            .getSoundManager()
+            .play(SimpleSoundInstance.forUI(SoundEvents.ARMOR_EQUIP_GOLD, randomPitch(0.8f, 1.2f), 0.8f));
+
+        if (insertSectionSignButton != null) {
+            insertSectionSignButton.visible = !showFormatTools;
+        }
+        formatTools.forEach((tool) -> tool.visible = showFormatTools);
+        colorTools.values().forEach((tool) -> tool.visible = showFormatTools);
+    }
+
+    public boolean formatToolsShown() {
+        return this.showFormatTools;
+    }
+
     protected void enterSignMode() {
         Objects.requireNonNull(minecraft).setScreen(new BookSigningScreen(this, bookColor));
     }
@@ -207,6 +341,12 @@ public class SpreadBookEditScreen extends Screen {
     private void clearDisplayCacheAfterPageChange() {
         leftPageTextBox.setCursorToEnd();
         rightPageTextBox.setCursorToEnd();
+    }
+
+    public void focusPage(Side side, Runnable action) {
+        TextBox newFocus = side == Side.LEFT ? leftPageTextBox : rightPageTextBox;
+        if (!newFocus.isFocused()) action.run();
+        this.setFocused(side == Side.LEFT ? leftPageTextBox : rightPageTextBox);
     }
 
     protected void pageBack() {
@@ -289,8 +429,21 @@ public class SpreadBookEditScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        if (insertSectionSignButton != null)
-            insertSectionSignButton.active = getFocused() instanceof TextBox;
+        boolean typing = getFocused() instanceof TextBox;
+        if (insertSectionSignButton != null) {
+            insertSectionSignButton.active = typing;
+        }
+        formatTools.forEach((tool) -> tool.active = typing);
+        colorTools.forEach((inkColor, tool) -> {
+            tool.active = typing;
+            if (!tool.visible) return;
+
+            RenderUtil.withColorMultiplied(inkColor, () -> {
+                // Ink Flask Color Label
+                guiGraphics.blit(TEXTURE, tool.getX(), tool.getY() + 11, 457, 0,
+                    14, 5, 512, 512);
+            });
+        });
 
         drawPageNumbers(guiGraphics, currentSpread);
     }
@@ -301,17 +454,31 @@ public class SpreadBookEditScreen extends Screen {
 
         RenderUtil.withColorMultiplied(bookColor, () -> {
             // Cover
-            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+            guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
                 0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
 
             // Enter Sign Mode BG
             guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
                 29, 28, 512, 512);
+
+            // Format Tools Toggle BG
+            guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 46, 0, 388,
+                29, 28, 512, 512);
         });
 
         // Pages
-        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+        guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
             0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+
+        if (showFormatTools) {
+            // Format Tools Bundle
+            guiGraphics.blit(TEXTURE, leftPos + BOOK_WIDTH + 5, topPos + 6,
+                295, 180, 40, 161, 512, 512);
+
+            // Color Ink Shelves
+            guiGraphics.blit(TEXTURE, leftPos - 81, topPos + 90,
+                335, 180, 76, 88, 512, 512);
+        }
     }
 
     protected void drawPageNumbers(GuiGraphics guiGraphics, int currentSpreadIndex) {
@@ -356,6 +523,12 @@ public class SpreadBookEditScreen extends Screen {
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    protected void insertFormatting(String sign) {
+        if (isFormattingAllowed() && getFocused() instanceof TextBox textBox) {
+            textBox.textFieldHelper.insertText(sign);
+        }
     }
 
     protected void insertSectionSign() {
@@ -422,14 +595,47 @@ public class SpreadBookEditScreen extends Screen {
         }
     }
 
+    private Optional<BookUI.ToolImageButton> getHoveredTool() {
+        return Stream.concat(formatTools.stream(), colorTools.values().stream())
+            .filter(BookUI.ToolImageButton::isHovered)
+            .filter((btn) -> {
+                if (btn.hasControllerHover()) {
+                    btn.setControllerHover(false);
+                    return false;
+                }
+                return true;
+            })
+            .findFirst();
+    }
+
+
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (insertSectionSignButton != null && insertSectionSignButton.isHovered()) {
             insertSectionSign();
             return true;
         }
+        Optional<BookUI.ToolImageButton> hoveredTool = getHoveredTool();
+
+        if (hoveredTool.isPresent()) {
+            hoveredTool.get().onClick(mouseX, mouseY);
+            return true;
+        }
 
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        Optional<BookUI.ToolImageButton> hoveredTool = getHoveredTool();
+
+        if (hoveredTool.isPresent()) {
+            hoveredTool.get().onRelease(mouseX, mouseY);
+            return true;
+        }
+
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
