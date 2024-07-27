@@ -48,13 +48,16 @@ public class BookScreenProcessor<T extends Screen> extends ScreenProcessor<T> {
 
     @Override
     protected void handleButtons(ControllerEntity controller) {
-        super.handleButtons(controller);
         updateGuides();
     }
 
     @Override
     protected void handleTabNavigation(ControllerEntity controller) {
-        super.handleTabNavigation(controller);
+        updateGuides();
+    }
+
+    @Override
+    protected void handleComponentNavigation(ControllerEntity controller) {
         updateGuides();
     }
 

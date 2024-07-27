@@ -6,8 +6,23 @@
     "scholar:book_next_page": {
       "axis": "controlify:axis/right_trigger"
     },
-    "scholar:book_insert_format": {
+    "scholar:book_toggle_format": {
       "button": "controlify:button/north"
+    },
+    "scholar:format_tool_click": {
+      "button": "controlify:button/south"
+    },
+    "scholar:format_prev_tool": {
+      "button": "controlify:button/left_shoulder"
+    },
+    "scholar:format_next_tool": {
+      "button": "controlify:button/right_shoulder"
+    },
+    "scholar:pick_color_tools": {
+      "button": "controlify:button/dpad_left"
+    },
+    "scholar:pick_format_tools": {
+      "button": "controlify:button/dpad_right"
     },
     "scholar:book_sign": {
       "button": "controlify:button/west"

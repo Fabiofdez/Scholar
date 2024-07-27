@@ -19,7 +19,12 @@ import static dev.isxander.controlify.bindings.BindContext.REGISTRY;
 public class ControllerBindings {
     public static InputBindingSupplier BOOK_PREV_PAGE;
     public static InputBindingSupplier BOOK_NEXT_PAGE;
-    public static InputBindingSupplier BOOK_INSERT_FORMAT;
+    public static InputBindingSupplier BOOK_FORMATTING;
+    public static InputBindingSupplier FORMAT_TOOL_CLICK;
+    public static InputBindingSupplier FORMAT_TOOLS_PREV;
+    public static InputBindingSupplier FORMAT_TOOLS_NEXT;
+    public static InputBindingSupplier PICK_COLOR_TOOLS;
+    public static InputBindingSupplier PICK_FORMAT_TOOLS;
     public static InputBindingSupplier BOOK_SIGN;
     public static InputBindingSupplier BOOK_FINALIZE;
     public static InputBindingSupplier BOOK_CANCEL_SIGN;
@@ -47,11 +52,48 @@ public class ControllerBindings {
             .description(Component.translatable("spectatorMenu.next_page"))
             .allowedContexts(viewContext, editContext));
 
-        BOOK_INSERT_FORMAT = ControlifyBindApi.get().registerBinding((builder) -> builder
-            .id(Scholar.resource("book_insert_format"))
+        BOOK_FORMATTING = ControlifyBindApi.get().registerBinding((builder) -> builder
+            .id(Scholar.resource("book_toggle_format"))
             .category(scholarCategory)
-            .name(Component.translatable("gui.scholar.controlify.book_insert_format"))
-            .description(Component.translatable("gui.scholar.controlify.book_insert_format.desc"))
+            .name(Component.translatable("gui.scholar.controlify.toggle_format_tools"))
+            .description(Component.translatable("gui.scholar.controlify.toggle_format_tools"))
+            .allowedContexts(editContext)
+        );
+
+        FORMAT_TOOL_CLICK = ControlifyBindApi.get().registerBinding((builder) -> builder
+            .id(Scholar.resource("format_tool_click"))
+            .category(scholarCategory)
+            .name(Component.translatable("gui.scholar.controlify.format_tool_click"))
+            .allowedContexts(editContext)
+        );
+
+        PICK_COLOR_TOOLS = ControlifyBindApi.get().registerBinding((builder) -> builder
+            .id(Scholar.resource("pick_color_tools"))
+            .category(scholarCategory)
+            .name(Component.translatable("gui.scholar.controlify.pick_color_tools"))
+            .allowedContexts(editContext)
+        );
+
+        PICK_FORMAT_TOOLS = ControlifyBindApi.get().registerBinding((builder) -> builder
+            .id(Scholar.resource("pick_format_tools"))
+            .category(scholarCategory)
+            .name(Component.translatable("gui.scholar.controlify.pick_format_tools"))
+            .allowedContexts(editContext)
+        );
+
+        FORMAT_TOOLS_PREV = ControlifyBindApi.get().registerBinding((builder) -> builder
+            .id(Scholar.resource("format_prev_tool"))
+            .category(scholarCategory)
+            .name(Component.translatable("gui.scholar.controlify.format_prev_tool"))
+            .description(Component.translatable("gui.scholar.controlify.format_prev_tool.desc"))
+            .allowedContexts(editContext)
+        );
+
+        FORMAT_TOOLS_NEXT = ControlifyBindApi.get().registerBinding((builder) -> builder
+            .id(Scholar.resource("format_next_tool"))
+            .category(scholarCategory)
+            .name(Component.translatable("gui.scholar.controlify.format_next_tool"))
+            .description(Component.translatable("gui.scholar.controlify.format_next_tool.desc"))
             .allowedContexts(editContext)
         );
 
@@ -89,6 +131,8 @@ public class ControllerBindings {
             .name(Component.translatable("lectern.take_book"))
             .description(Component.translatable("gui.scholar.controlify.lectern_take_book"))
             .allowedContexts(viewContext));
+
+
     }
 
     private static BindContext register(String path, Function<Minecraft, Boolean> predicate) {
